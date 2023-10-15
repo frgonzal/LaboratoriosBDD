@@ -1,0 +1,115 @@
+Martín Bravo
+Franco González
+Iván Vidal
+
+
+
+## P1
+
+SELECT COUNT(*) FROM pelicula; 
+
+
+## P2
+
+SELECT COUNT(DISTINCT anho) FROM pelicula;
+
+
+## P3
+
+SELECT * FROM pelicula
+ORDER BY calificacion DESC, nombre ASC, anho ASC
+LIMIT 10;
+
+
+## P4
+
+SELECT DISTINCT per.a_nombre
+FROM personaje AS per,
+(
+    SELECT nombre, anho FROM pelicula
+    ORDER BY calificacion DESC, nombre ASC, anho ASC
+    LIMIT 10
+) AS pel
+WHERE per.p_nombre = pel.nombre
+AND   per.p_anho   = pel.anho;
+
+
+## P5
+
+SELECT DISTINCT per.a_nombre
+FROM personaje AS per, actor AS act,
+(
+    SELECT nombre, anho FROM pelicula
+    ORDER BY calificacion DESC, nombre ASC, anho ASC
+    LIMIT 10
+) AS pel
+WHERE per.p_nombre = pel.nombre
+AND   per.p_anho   = pel.anho
+AND   act.nombre   = per.a_nombre
+AND   act.genero = 'F';
+
+
+## P6
+
+SELECT DISTINCT FLOOR(p_anho/10)*10 AS decada
+FROM personaje 
+WHERE a_nombre = 'Buscemi, Steve';
+
+
+## P7
+
+SELECT anho, COUNT(nombre)
+FROM pelicula
+GROUP BY anho
+ORDER BY anho ASC;
+
+
+## P8
+
+SELECT * FROM
+(
+    SELECT anho, COUNT(nombre) AS count
+    FROM pelicula
+    GROUP BY anho
+) AS anhos
+WHERE count >= 2
+ORDER BY count DESC;
+
+
+## P9
+
+SELECT per.a_nombre, COUNT(pel.nombre) AS count
+FROM pelicula AS pel, personaje AS per
+WHERE pel.nombre = per.p_nombre
+AND   pel.anho  = per.p_anho
+AND   pel.calificacion >= 8.6
+GROUP BY per.a_nombre
+ORDER BY count ASC;
+
+
+## P10
+
+(
+SELECT pel.nombre, COUNT(per.a_nombre) AS count
+FROM pelicula AS pel, personaje AS per, actor AS act
+WHERE pel.nombre = per.p_nombre
+AND   pel.anho   = per.p_anho
+AND   act.nombre = per.a_nombre
+AND   act.genero = 'F'
+GROUP BY (pel.nombre, pel.anho)
+)
+UNION
+(
+SELECT nombre, 0 AS count
+FROM pelicula
+WHERE (nombre, anho) NOT IN
+    (
+    SELECT pel.nombre, pel.anho
+    FROM  pelicula AS pel, personaje AS per, actor AS act
+    WHERE pel.nombre = per.p_nombre
+    AND   pel.anho   = per.p_anho
+    AND   act.nombre = per.a_nombre
+    AND   act.genero = 'F'
+    )
+)
+;

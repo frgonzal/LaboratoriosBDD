@@ -1,0 +1,113 @@
+Martín Bravo
+Franco González
+Iván Vidal
+
+
+// P1
+
+SELECT * FROM pelicula
+WHERE 1980 <= anho
+AND   anho <  1990
+ORDER BY calificacion DESC;
+
+
+// P2
+
+SELECT personaje
+FROM   personaje
+WHERE  a_nombre='Bale, Christian'
+ORDER BY p_anho;
+
+
+//P3
+
+SELECT  PE.nombre, PE.anho, PE.calificacion
+FROM    personaje AS P, actor AS A, pelicula AS PE
+WHERE   P.a_nombre = 'Bale, Christian' 
+AND     P.a_nombre = A.nombre 
+AND     PE.nombre  = P.p_nombre
+AND     PE.anho    = P.p_anho
+ORDER BY calificacion DESC;
+
+
+//P4
+
+SELECT P.personaje
+FROM   personaje AS P, actor AS A, pelicula AS PE
+WHERE  A.nombre = P.a_nombre
+AND    A.genero = 'F'
+AND    PE.nombre = P.p_nombre
+AND    PE.anho   = P.p_anho
+AND    2000 >  PE.anho 
+AND    PE.anho >= 1990
+AND    PE.calificacion >= 8.5;
+
+
+// P5
+
+SELECT *
+FROM pelicula
+WHERE nombre LIKE 'The Lord of the Rings%'
+ORDER BY calificacion, anho;
+
+
+// P6
+
+SELECT DISTINCT P1.a_nombre
+FROM personaje AS P1, personaje AS P2
+WHERE P1.p_nombre = P2.p_nombre
+AND   P1.p_anho   = P2.p_anho
+AND   P1.a_nombre = P2.a_nombre
+AND   P1.personaje <> P2.personaje;
+
+
+// P7
+
+SELECT DISTINCT p_nombre 
+FROM personaje
+WHERE a_nombre =  'Thurman, Uma'
+INTERSECT
+SELECT DISTINCT p_nombre
+FROM personaje
+WHERE a_nombre = 'Jackson, Samuel L.'
+;
+
+
+//P8
+SELECT DISTINCT p_nombre
+FROM personaje
+WHERE a_nombre = 'Thurman, Uma'
+EXCEPT
+SELECT DISTINCT p_nombre
+FROM personaje
+WHERE a_nombre = 'Jackson, Samuel L.'
+;
+
+
+// P9
+
+SELECT DISTINCT P1.a_nombre, P2.a_nombre
+FROM personaje AS P1, personaje AS P2, personaje AS P3, personaje AS P4
+
+WHERE  P1.p_nombre = P2.p_nombre
+AND    P1.p_anho   = P2.p_anho
+AND    P1.a_nombre < P2.a_nombre
+
+AND    P3.p_nombre = P4.p_nombre
+AND    P3.p_anho   = P4.p_anho
+AND    P3.a_nombre < P4.a_nombre
+
+AND    P1.a_nombre = P3.a_nombre
+AND    P2.a_nombre = P4.a_nombre
+AND    (P1.p_nombre <> P3.p_nombre OR P1.p_anho <> P3.p_anho)
+;
+
+// P10
+
+SELECT *
+FROM pelicula
+EXCEPT
+SELECT P1.nombre, P1.anho, P1.calificacion
+FROM  pelicula AS P1, pelicula AS P2
+WHERE P1.calificacion < P2.calificacion
+;
