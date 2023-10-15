@@ -104,21 +104,28 @@ with open("data.csv","r") as csvfile:
                 if relation:
                     name_related = relation.group(1).split(",")
                     name_related = list(filter(lambda x:
-                                                x.lower()!="deceased" and \
+                                                x and\
+                                                x != "Jr." and\
+                                                "deceased" not in x.lower() and \
                                                 "unnamed" not in x.lower() and\
-                                                "unidentified" not in x.lower()
+                                                "unidentified" not in x.lower() and\
+                                                x[0].isupper() #nombres comienzan con mayus
                                         , name_related))
                     name_related = [x.strip() for x in name_related]
 
-                    relation     = relation.group(2).split(",")
-                    relation     = list(filter(lambda x:
-                                                x.lower()!="deceased" and \
-                                                "relatives" not in x.lower() and\
-                                                x.lower()!="unconfirmed" and\
-                                                x not in names_super
-                                        , relation))
-
-                    if name_related and relation:
-                        pass
-                        #print(str(i)+" "*(4-len(str(i)))+"name: ",name_related," "*(60-len(str(name_related))),"relation: ", relation[i])
+                    relation_type = relation.group(2).split(",")
+                    relation_type = list(filter(lambda x:
+                                                    x and\
+                                                    "deceased" not in x.lower() and \
+                                                    "relatives" not in x.lower() and\
+                                                    x.lower()!="unconfirmed" and\
+                                                    x[0].islower() #relaciones comienzan con minus
+                                            , relation_type))
+                    if name_related and relation_type:
+                        for k in range(len(relation_type)):
+                            rel = relation_type[k]
+                            if relation_type[k][-1] == "s":
+                                rel = relation_type[k][:-1]
+                            for nam in name_related:
+                                print(str(i)+" "*(4-len(str(i)))+"name: ",nam," "*(40-len(str(nam))),"relation: ", rel)
 
