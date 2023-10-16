@@ -72,7 +72,8 @@ CREATE TABLE superheroes.CBaleRico_hasAlterego (
 -- ###          P3           ### --
 -- ############################# --
 
--- (a) --
+-- (a)
+-- Nombres de los 3 superheroes con más parientes.
 SELECT RS.name
 FROM (
     SELECT DISTINCT S.name, S.id_character AS id_superheroe, R.id_character
@@ -84,7 +85,8 @@ GROUP BY (RS.name, RS.id_superheroe)
 ORDER BY count(RS.id_character) DESC
 LIMIT 3;
 
--- (b) --
+-- (b)
+-- Nombres de los 3 personajes no superheroes con más parientes.
 SELECT RC.name
 FROM (
     SELECT DISTINCT C.name, C.id, R.id_superheroe
@@ -100,7 +102,8 @@ GROUP BY (RC.name, RC.id)
 ORDER BY count(RC.id_superheroe) DESC
 LIMIT 3;
 
--- (c) --
+-- (c)
+-- Nombres de los 5 superheroes con más parientes superheroes.
 SELECT RS.name
 FROM (
     SELECT DISTINCT S.name, S.id_character AS id_superheroe, R.id_character
@@ -116,7 +119,8 @@ GROUP BY (RS.name, RS.id_superheroe)
 ORDER BY count(RS.id_character) DESC
 LIMIT 3;
 
--- (d) --
+-- (d)
+-- Nombre de relación más común.
 SELECT relation.name
 FROM superheroes.CBaleRico_Relation   AS relation,
      superheroes.CBaleRico_related_to AS rel_to
@@ -125,7 +129,8 @@ GROUP BY (relation.id, relation.name)
 ORDER BY count(*) DESC
 LIMIT 1;
 
--- (e) --
+-- (e)
+-- Los 3 trabajos más populares.
 SELECT work.name
 FROM superheroes.CBaleRico_WorkOcupation AS work,
      superheroes.CBaleRico_hasWork       AS has
@@ -133,4 +138,3 @@ WHERE work.id = has.id_workocupation
 GROUP BY (work.id, work.name)
 ORDER BY count(has.id_superheroe) DESC
 LIMIT 3;
-
