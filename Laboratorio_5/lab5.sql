@@ -74,67 +74,60 @@ CREATE TABLE superheroes.CBaleRico_hasAlterego (
 
 -- (a)
 -- Nombres de los 3 superheroes con más parientes.
-SELECT RS.name
-FROM (
-    SELECT DISTINCT S.name, S.id_character AS id_superheroe, R.id_character
-    FROM superheroes.CBaleRico_Superheroe AS S,
-         superheroes.CBaleRico_related_to AS R
-    WHERE S.id_character = R.id_superheroe
-) AS RS
-GROUP BY (RS.name, RS.id_superheroe)
-ORDER BY count(RS.id_character) DESC
+SELECT S.name
+FROM   superheroes.CBaleRico_Superheroe AS S,
+       superheroes.CBaleRico_related_to AS R
+WHERE  S.id_character = R.id_superheroe
+GROUP BY (S.name, S.id_character)
+ORDER BY count(DISTINCT R.id_character) DESC
 LIMIT 3;
 
 -- (b)
 -- Nombres de los 3 personajes no superheroes con más parientes.
-SELECT RC.name
-FROM (
-    SELECT DISTINCT C.name, C.id, R.id_superheroe
-    FROM superheroes.CBaleRico_Character AS C,
-         superheroes.CBaleRico_related_to AS R
-    WHERE C.id = R.id_character
-    AND C.id NOT IN (
-        SELECT id_character
-        FROM superheroes.CBaleRico_Superheroe
-    )
-) AS RC
-GROUP BY (RC.name, RC.id)
-ORDER BY count(RC.id_superheroe) DESC
+SELECT C.name, count(distinct R.id_superheroe)
+FROM   superheroes.CBaleRico_Character  AS C,
+       superheroes.CBaleRico_related_to AS R
+WHERE  C.id = R.id_character
+AND    C.id NOT IN (
+    SELECT id_character
+    FROM superheroes.CBaleRico_Superheroe
+)
+GROUP BY (C.name, C.id)
+ORDER BY count(DISTINCT R.id_superheroe) DESC
 LIMIT 3;
 
 -- (c)
 -- Nombres de los 5 superheroes con más parientes superheroes.
-SELECT RS.name
-FROM (
-    SELECT DISTINCT S.name, S.id_character AS id_superheroe, R.id_character
-    FROM superheroes.CBaleRico_Superheroe AS S,
-         superheroes.CBaleRico_related_to AS R
-    WHERE S.id_character = R.id_superheroe
-    AND R.id_character IN (
-        SELECT id_character
-        FROM superheroes.CBaleRico_Superheroe
-    )
-) AS RS
-GROUP BY (RS.name, RS.id_superheroe)
-ORDER BY count(RS.id_character) DESC
-LIMIT 3;
+SELECT S.name
+FROM   superheroes.CBaleRico_Superheroe AS S,
+       superheroes.CBaleRico_related_to AS R
+WHERE  S.id_character = R.id_superheroe
+AND    R.id_character IN (
+    SELECT id_character
+    FROM superheroes.CBaleRico_Superheroe
+)
+GROUP BY (S.name, S.id_character)
+ORDER BY count(DISTINCT R.id_character) DESC
+LIMIT 5;
 
 -- (d)
 -- Nombre de relación más común.
 SELECT relation.name
-FROM superheroes.CBaleRico_Relation   AS relation,
-     superheroes.CBaleRico_related_to AS rel_to
-WHERE relation.id = rel_to.id_relation
+FROM   superheroes.CBaleRico_Relation   AS relation,
+       superheroes.CBaleRico_related_to AS rel_to
+WHERE  relation.id = rel_to.id_relation
 GROUP BY (relation.id, relation.name)
-ORDER BY count(*) DESC
+ORDER BY count((rel_to.id_superheroe,rel_to.id_character)) DESC
 LIMIT 1;
 
 -- (e)
 -- Los 3 trabajos más populares.
 SELECT work.name
-FROM superheroes.CBaleRico_WorkOcupation AS work,
-     superheroes.CBaleRico_hasWork       AS has
-WHERE work.id = has.id_workocupation
+FROM   superheroes.CBaleRico_WorkOcupation AS work,
+       superheroes.CBaleRico_hasWork       AS has
+WHERE  work.id = has.id_workocupation
 GROUP BY (work.id, work.name)
 ORDER BY count(has.id_superheroe) DESC
 LIMIT 3;
+
+

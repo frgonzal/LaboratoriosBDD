@@ -40,12 +40,17 @@ conn = psycopg2.connect (
 )
 cur = conn.cursor()
 
+
 def findOrInsert(table, name):
     cur.execute("select id from "+ table +" where name=%s limit 1", [name])
     r = cur.fetchone()
     if(r):
         return r[0]
     cur.execute("insert into "+ table +" (name) values (%s) returning id", [name])
+    return cur.fetchone()[0]
+
+def insertChar(name):
+    cur.execute("insert into "+T_character+" (name) values (%s) returning id", [name])
     return cur.fetchone()[0]
 
 def findOrInsertCharacter(name_related):
@@ -156,7 +161,7 @@ with open("data.csv","r") as csvfile:
         ###################################
 
         ## Character
-        id_char = findOrInsert(T_character, name)
+        id_char = insertChar(name)
 
         ## Superheroe
         insertSuperheroe(id_char, name_super, intelligence, strength, speed)
