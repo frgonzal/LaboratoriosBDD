@@ -10,27 +10,30 @@ import psycopg2.extras
 import csv
 import re
 
+# Nombre del grupo para las tablas
 nombre_grupo      = "superheroes.CBaleRico_"
  
+# Tablas de entidades
 T_character   = nombre_grupo + "Character"
 T_superheroe  = nombre_grupo + "Superheroe"
 T_relation    = nombre_grupo + "Relation"
 T_work        = nombre_grupo + "WorkOcupation"
 T_alterego    = nombre_grupo + "Alterego"
 
+# Tablas de relaciones
 T_related_to  = nombre_grupo + "related_to"
 T_haswork     = nombre_grupo + "hasWork"
 T_hasalterego = nombre_grupo + "hasAlterego"
 
-
+# Funcion para reemplazar espacios por guiones
 def replace_inside_parentheses(match):
     return match.group(0).replace(" ", "-")
 
+# Funcion para eliminar el interior de los parentesis
 def del_inside_parentheses(s):
     return re.sub(r"\([^)]*\)","", s).strip()
 
-
-
+# Conexion a la base de datos
 conn = psycopg2.connect (
     host     = "cc3201.dcc.uchile.cl",
     database = "cc3201",
@@ -38,9 +41,10 @@ conn = psycopg2.connect (
     password = "j'<3_cc3201",
     port     = "5440"
 )
+# Cursor
 cur = conn.cursor()
 
-
+# Funcion para buscar o insertar en una tabla
 def findOrInsert(table, name):
     cur.execute("select id from "+ table +" where name=%s limit 1", [name])
     r = cur.fetchone()
@@ -49,10 +53,12 @@ def findOrInsert(table, name):
     cur.execute("insert into "+ table +" (name) values (%s) returning id", [name])
     return cur.fetchone()[0]
 
+# Funcion para buscar o insertar en la tabla de characters
 def insertChar(name):
     cur.execute("insert into "+T_character+" (name) values (%s) returning id", [name])
     return cur.fetchone()[0]
 
+# Funcion para buscar o insertar en la tabla de characters
 def findOrInsertCharacter(name_related):
     #Buscar en characters
     cur.execute("select id from "+T_character +" where name=%s limit 1", [name_related])
@@ -66,6 +72,7 @@ def findOrInsertCharacter(name_related):
         id_character = cur.fetchone()
     return id_character[0]
 
+# Funcion para insertar en la tabla de superheroes
 def insertSuperheroe(id_char, name_super, intelligence, strength, speed):
     cur.execute("select id_character from "+T_superheroe+" where id_character=%s and name=%s", [id_char, name_super])
     id_super = cur.fetchone()
@@ -75,6 +82,7 @@ def insertSuperheroe(id_char, name_super, intelligence, strength, speed):
                     +" values (%s, %s, %s, %s, %s)",
                     [id_char, name_super, intelligence, strength, speed])
 
+# Funcion para insertar en la tabla de relaciones
 def insertHasWork(id_work, id_char):
     cur.execute("select id_workocupation from "+ T_haswork
                 +" where id_workocupation=%s and id_superheroe=%s limit 1",
@@ -85,7 +93,7 @@ def insertHasWork(id_work, id_char):
                     +" (id_workocupation, id_superheroe) values (%s, %s)",
                     [id_work, id_char])
 
-
+# Funcion para insertar en la tabla de relaciones
 def insertHasAlter(id_alterego, id_char): 
     cur.execute("select id_alterego from "+ T_hasalterego
                 +" where id_alterego=%s and id_superheroe=%s limit 1",
@@ -96,6 +104,7 @@ def insertHasAlter(id_alterego, id_char):
                     +" (id_alterego, id_superheroe) values (%s, %s)",
                     [id_alterego, id_char])
 
+# Funcion para insertar en la tabla de relaciones
 def insertHasRelation(id_relation, id_character, id_superheroe):
     cur.execute("select id_relation from " + T_related_to
                 +" where id_relation=%s and id_character=%s and id_superheroe=%s limit 1",
@@ -106,13 +115,14 @@ def insertHasRelation(id_relation, id_character, id_superheroe):
                     +" (id_relation, id_character, id_superheroe) values (%s, %s, %s)",
                     [id_relation, id_character, id_superheroe])
 
-
+# Leer el archivo csv
 with open("data.csv","r") as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='"')
     i = 0
     for row in reader:
         i+=1
         if i==1:
+            # Indices
             index_name_char          = row.index("biography__full-name")
             index_name_superh        = row.index("name")
             index_intelligence       = row.index("powerstats__intelligence") 
@@ -171,7 +181,7 @@ with open("data.csv","r") as csvfile:
             for work in works:
                 id_work = findOrInsert(T_work, work)
                 #has
-                insertHasWork(id_work, id_char)
+                insertHasWork(id_work, id_char) 
 
         # Alterego
         if alter_egos:
@@ -188,6 +198,7 @@ with open("data.csv","r") as csvfile:
     for row in reader:
         i+=1
         if i==1:
+            # Indices
             index_name_superh = row.index("name")
             index_name_char   = row.index("biography__full-name")
             index_relation    = row.index("connections__relatives")
@@ -195,15 +206,15 @@ with open("data.csv","r") as csvfile:
 
         # Full Name
         if row[index_name_char] and row[index_name_char] != "-":
-            name = row[index_name_char]
+            name = row[index_name_char] # nombre completo
         else:
-            name = row[index_name_superh]
+            name = row[index_name_superh] # nombre superheroe
         if "/" in name:
-            name = name.split("/")[0].strip()
+            name = name.split("/")[0].strip() # separa por / y toma el primero
         if "(" in name:
             name = del_inside_parentheses(name) # elimina el interior del parentesis
 
-        #Relations
+        # Relations
         relations = row[index_relation] if row[index_relation]!="-" else None
         if not relations: continue
 
@@ -215,7 +226,6 @@ with open("data.csv","r") as csvfile:
                     )
         relations = re.sub(r'\([^)]*\)', replace_inside_parentheses, relations)
         relations = relations.split("),")
-
         for relation in relations:
             if relation and (relation.count("(")!=relation.count(")")):
                 relation += ")"
