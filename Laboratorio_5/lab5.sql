@@ -10,11 +10,14 @@
 -- ############################# --
 -- ###          P1           ### --
 -- ############################# --
+
+-- Tabla de personajes
 CREATE TABLE superheroes.CBaleRico_Character (
     id serial primary key,
     name varchar (255) not null
 );
 
+-- Tabla de superhéroes
 CREATE TABLE superheroes.CBaleRico_Superheroe (
     id_character bigint not null,
     name varchar (255) not null,
@@ -25,21 +28,25 @@ CREATE TABLE superheroes.CBaleRico_Superheroe (
     foreign key (id_character) references  superheroes.CBaleRico_Character(id)
 );
 
+-- Tabla de relacion de personajes
 CREATE TABLE superheroes.CBaleRico_Relation (
     id serial primary key,
     name varchar (255) not null
 );
 
+-- Tabla de alteregos
 CREATE TABLE superheroes.CBaleRico_Alterego (
     id serial primary key,
     name varchar (255) not null
 );
 
+-- Tabla de ocupaciones
 CREATE TABLE superheroes.CBaleRico_WorkOcupation (
     id serial primary key,
     name varchar (255) not null
 );
 
+-- Tabla de relacionado a
 CREATE TABLE superheroes.CBaleRico_related_to (
     id_relation   bigint not null,
     id_character  bigint not null,
@@ -51,6 +58,7 @@ CREATE TABLE superheroes.CBaleRico_related_to (
     foreign key (id_superheroe) references superheroes.CBaleRico_Superheroe(id_character)
 );
 
+-- Tabla de tiene trabajo
 CREATE TABLE superheroes.CBaleRico_hasWork (
     id_workocupation bigint not null,
     id_superheroe    bigint not null,
@@ -59,6 +67,7 @@ CREATE TABLE superheroes.CBaleRico_hasWork (
     foreign key (id_superheroe)    references superheroes.CBaleRico_Superheroe(id_Character)
 );
 
+-- Tabla de tiene alterego
 CREATE TABLE superheroes.CBaleRico_hasAlterego (
     id_alterego   bigint not null,
     id_superheroe bigint not null,
