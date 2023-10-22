@@ -46,12 +46,12 @@ cur = conn.cursor()
 
 # Funcion para buscar o insertar en una tabla
 def findOrInsert(table, name):
-    cur.execute("select id from "+ table +" where name=%s limit 1", [name])
+    cur.execute("select id from "+ table +" where name=%s limit 1", [name]) # Buscar
     r = cur.fetchone()
-    if(r):
+    if(r): # Si existe
         return r[0]
     cur.execute("insert into "+ table +" (name) values (%s) returning id", [name])
-    return cur.fetchone()[0]
+    return cur.fetchone()[0] 
 
 # Funcion para buscar o insertar en la tabla de characters
 def insertChar(name):
@@ -67,6 +67,7 @@ def findOrInsertCharacter(name_related):
     if not id_character:
         cur.execute("select id_character from "+T_superheroe+" where name=%s limit 1", [name_related])
         id_character = cur.fetchone()
+    # Insertar en characters
     if not id_character:
         cur.execute("insert into "+T_character+" (name) values (%s) returning id", [name_related])
         id_character = cur.fetchone()
@@ -99,6 +100,7 @@ def insertHasAlter(id_alterego, id_char):
                 +" where id_alterego=%s and id_superheroe=%s limit 1",
                 [id_alterego, id_char])
     r = cur.fetchone()
+    # Si no existe
     if not r:
         cur.execute("insert into "+ T_hasalterego
                     +" (id_alterego, id_superheroe) values (%s, %s)",
@@ -110,6 +112,7 @@ def insertHasRelation(id_relation, id_character, id_superheroe):
                 +" where id_relation=%s and id_character=%s and id_superheroe=%s limit 1",
                 [id_relation, id_character, id_superheroe])
     r = cur.fetchone()
+    # Si no existe
     if not r:
         cur.execute("insert into " + T_related_to
                     +" (id_relation, id_character, id_superheroe) values (%s, %s, %s)",
@@ -139,7 +142,7 @@ with open("data.csv","r") as csvfile:
         else:
             name = row[index_name_superh]
         if "/" in name:
-            name = name.split("/")[0].strip()
+            name = name.split("/")[0].strip() # separa por / y toma el primero
         if "(" in name:
             name = del_inside_parentheses(name) # elimina el interior del parentesis
 
