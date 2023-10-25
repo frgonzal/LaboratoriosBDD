@@ -1,7 +1,6 @@
-    INTEGRANTES 
-
-    Franco González 
-    Iván Vidal    
+### INTEGRANTES ###
+Franco González
+Iván Vidal
 
 
 #######          P1          #######
@@ -62,5 +61,22 @@ SET comentario = 'Christian Bale Rico'
 WHERE nombre='González Leiva, Franco Antonio'
    or nombre='Vidal Romero, Iván Mauricio';--'
 
+### F
+Dentro de la aplicación web, al hacer búsquedas en la página se llama la
+función search la cual, para realizar la consulta, ejecuta lo siguiente:
 
+cur.execute("SELECT nombres, apellido_p, apellido_m, mes, anho, total FROM uchile.transparencia WHERE apellido_p = '"+ input +"' ORDER BY total DESC LIMIT 250")
+
+Al concatenar directo el input se deja la opción para que un usuario
+pueda hacer una injección sql. La solución en este caso es utilizar el
+formateo de strings que tiene python, es decir:
+
+cur.execute("SELECT nombres, apellido_p, apellido_m, mes, anho, total FROM uchile.transparencia WHERE apellido_p= %s ORDER BY total DESC LIMIT 250", [input])
+
+Así, python considera todo el input como un solo string y no deja
+opcion para hacer injecciones sql.
+
+También, si la página solo se utiliza para hacer consultas, se debería
+utilizar algun usuario que tenga persmisos solo para leer de las tablas,
+no uno que tenga permisos para modificarlas.
 
