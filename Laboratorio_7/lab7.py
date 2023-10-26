@@ -1,4 +1,5 @@
 import psycopg2
+import matplotlib.pyplot as plt
 
 
 conn = psycopg2.connect (
@@ -70,8 +71,17 @@ for n in ns:
     print(str(n)+":"+" "*(6 - len(str(n))),time_cons(n, "opt", True))
 
 print("consulta no anidada no optimizada")
+y = []
+z = []
 for n in ns:
+    y.append(time_cons(n, "opt", False)[0])
+    z.append(time_cons(n, "opt", False)[1])
     print(str(n)+":"+" "*(6 - len(str(n))),time_cons(n, "opt", False))
+
+plt.plot(ns, y, label='Line', color='r', linestyle='-')
+plt.plot(ns, z, label='Line', color='b', linestyle='-')
+
+plt.show()
 
 conn.close()
 
