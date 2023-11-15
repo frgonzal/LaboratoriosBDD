@@ -1,0 +1,44 @@
+DROP TABLE IF EXISTS trx_p.Abdiuk_votosPorCondado;
+DROP TABLE IF EXISTS trx_p.Abdiuk_candidato;
+DROP TABLE IF EXISTS trx_p.Abdiuk_condado;
+DROP TABLE IF EXISTS trx_p.Abdiuk_estado;
+
+CREATE TABLE trx_p.Abdiuk_estado (
+    nombre varchar (255),
+	voto_electoral smallint,
+	cierre time,
+	num_candidatos smallint,
+	primary key (nombre)
+);
+
+INSERT INTO Abdiuk_estado SELECT * FROM estado;
+
+CREATE TABLE trx_p.Abdiuk_condado (
+    nombre varchar (255),
+	estado varchar (255),
+	reportado float,
+	primary key (nombre, estado),
+	foreign key (estado) references Abdiuk_estado(nombre)
+);
+
+INSERT INTO Abdiuk_condado SELECT * FROM condado;
+
+CREATE TABLE trx_p.Abdiuk_candidato (
+    nombre varchar (255),
+	partido varchar (255),
+	primary key (nombre)
+);
+
+INSERT INTO Abdiuk_candidato SELECT * FROM candidato;
+
+CREATE TABLE trx_p.Abdiuk_votosPorCondado (
+    candidato varchar (255),
+	condado varchar (255),
+	estado varchar (255),
+    votos int,
+	primary key (candidato, condado, estado),
+	foreign key (candidato) references Abdiuk_candidato(nombre),
+	foreign key (condado, estado) references Abdiuk_condado(nombre, estado)
+);
+
+INSERT INTO Abdiuk_votosPorCondado SELECT * FROM votosPorCondado;
